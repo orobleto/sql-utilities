@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.octaviorobleto.commons.utilities.text.StringUtils;
 import com.octaviorobleto.sql.annotations.Column;
 import com.octaviorobleto.sql.annotations.Table;
@@ -23,6 +26,9 @@ import com.octaviorobleto.sql.jdbc.entities.FieldWrapper;
  * @class FieldUtils
  */
 public final class FieldUtils {
+
+	private static Logger logger = LogManager.getLogger();
+
 	/**
 	 * No permitir crear una instancia de {@code FieldUtils}
 	 */
@@ -50,8 +56,8 @@ public final class FieldUtils {
 			String destinationName = field.getName();
 			try {
 				fieldWrapper.setClazz(Class.forName(clazzFieldWrapper));
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+			} catch (ClassNotFoundException error) {
+				logger.error(error);
 			}
 
 			// evaluamos si es una clase propia o de java
@@ -144,11 +150,11 @@ public final class FieldUtils {
 							.collect(Collectors.toList()));
 				}
 			} catch (NoSuchFieldException error) {
-				// error.printStackTrace();
+				logger.error(error + " -> " + parentField);
 			} catch (SecurityException | IllegalArgumentException | IllegalAccessException error) {
-				error.printStackTrace();
+				logger.error(error);
 			} catch (Exception error) {
-				error.printStackTrace();
+				logger.error(error);
 			}
 
 		});
@@ -190,11 +196,11 @@ public final class FieldUtils {
 					}
 
 				} catch (NoSuchFieldException error) {
-					// e1.printStackTrace();
-				} catch (IllegalArgumentException e1) {
-					e1.printStackTrace();
-				} catch (IllegalAccessException e1) {
-					e1.printStackTrace();
+					logger.error(error + " -> " + parentField);
+				} catch (IllegalArgumentException error) {
+					logger.error(error);
+				} catch (IllegalAccessException error) {
+					logger.error(error);
 				}
 
 			});
@@ -202,7 +208,7 @@ public final class FieldUtils {
 			return e;
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException error) {
-			error.printStackTrace();
+			logger.error(error);
 		}
 
 		return null;
