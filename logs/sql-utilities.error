@@ -1,0 +1,4 @@
+2022-07-18 16:23:31.461 ERROR  -com.octaviorobleto.sql.jdbc.utils.FieldUtils.getFieldsWrapper(FieldUtils.java:61) - java.lang.ClassNotFoundException: boolean
+2022-07-18 16:25:16.175 ERROR  -com.octaviorobleto.sql.jdbc.utils.FieldUtils.getFieldsWrapper(FieldUtils.java:61) - java.lang.ClassNotFoundException: boolean
+2022-07-18 16:32:55.993 ERROR  -com.octaviorobleto.sql.jdbc.utils.FieldUtils.getFieldsWrapper(FieldUtils.java:63) - java.lang.ClassNotFoundException: boolean
+2022-07-18 16:33:37.663 ERROR  -com.octaviorobleto.sql.jdbc.utils.FieldUtils.getFieldsWrapper(FieldUtils.java:63) - java.lang.ClassNotFoundException: boolean

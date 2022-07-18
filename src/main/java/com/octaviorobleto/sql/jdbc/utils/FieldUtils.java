@@ -52,7 +52,8 @@ public final class FieldUtils {
 		for (Field field : fields) {
 			FieldWrapper fieldWrapper = new FieldWrapper();
 			fieldWrapper.setSourceName(field.getName());
-			String clazzFieldWrapper = field.getGenericType().getTypeName();
+
+			String clazzFieldWrapper = getPrimitiveClass(field.getGenericType().getTypeName());
 			// asumimos el nombre del campo como el nombre del atributo
 			String destinationName = field.getName();
 			try {
@@ -218,6 +219,35 @@ public final class FieldUtils {
 		}
 
 		return null;
+	}
+
+	private static String getPrimitiveClass(String clazz) {
+		// evaluo al principio si es una clase o un primitivo, al ser una clase returno
+		// el String
+		if (!StringUtils.isEmpty(clazz) && !(clazz.indexOf(".") == -1)) {
+			return clazz;
+		}
+
+		switch (clazz) {
+		case "byte":
+			return "java.lang.Byte";
+		case "short":
+			return "java.lang.Short";
+		case "int":
+			return "java.lang.Integer";
+		case "long":
+			return "java.lang.Long";
+		case "float":
+			return "java.lang.Float";
+		case "double":
+			return "java.lang.Double";
+		case "boolean":
+			return "java.lang.Boolean";
+		case "char":
+			return "java.lang.Character";
+		default:
+			return clazz;
+		}
 	}
 
 }
