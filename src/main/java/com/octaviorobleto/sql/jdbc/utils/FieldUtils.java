@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.octaviorobleto.commons.utilities.text.StringUtils;
 import com.octaviorobleto.sql.annotations.Column;
+import com.octaviorobleto.sql.annotations.Id;
 import com.octaviorobleto.sql.annotations.Table;
 import com.octaviorobleto.sql.jdbc.entities.FieldWrapper;
 
@@ -67,15 +68,20 @@ public final class FieldUtils {
 				ownFieldsWrapper = getFieldsWrapper(fieldWrapper.getClazz());
 			}
 
-			// buscamos el nombre destino, sino existe entonces colocamos el mismo nombre
+			// verificamos el nombre destino, sino existe entonces colocamos el mismo nombre
 			// del campo esto atraves de las anotaciones Columna
 			if (field.isAnnotationPresent(Column.class)) {
 				Column column = field.getAnnotation(Column.class);
 				if (!StringUtils.isEmpty(column.name())) {
 					destinationName = column.name();
 				}
-				fieldWrapper.setKey(column.isKey());
 			}
+
+			// verificamos si el objeto es clave primaria
+			if (field.isAnnotationPresent(Id.class)) {
+				fieldWrapper.setKey(true);
+			}
+
 			fieldWrapper.setDestinationName(destinationName);
 
 			// agregamos el objeto a la lista

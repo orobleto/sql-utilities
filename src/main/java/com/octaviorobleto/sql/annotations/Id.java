@@ -7,16 +7,16 @@ import java.lang.annotation.Target;
 
 /**
  * 
- * Indica el nombre de la columna y si es primary key en los campos utilizados
+ * Indica si el objeto es primary key (Solo se permite uno por objeto)
  * 
  * @author <a href="https://octaviorobleto.com" target="_blank">Octavio
  *         Robleto</a>
  * @version 1.0
  * @date 2022-07-13
- * @class Column
+ * @class Id
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(value = { ElementType.METHOD, ElementType.FIELD })
-public @interface Column {
-	String name() default "";
+@Target(value = { ElementType.FIELD })
+public @interface Id {
+
 }

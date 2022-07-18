@@ -1,5 +1,6 @@
 package com.octaviorobleto.sql.jdbc.utils;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.octaviorobleto.sql.jdbc.entities.FieldWrapper;
@@ -111,7 +112,7 @@ public final class QueryUtils {
 	 * @return {@link String}
 	 */
 	private static String getValues(List<FieldWrapper> fieldsWrapper) {
-		return List.of(getSelect(fieldsWrapper).split(",")).stream().map(e -> "?")
+		return Arrays.asList(getSelect(fieldsWrapper).split(",")).stream().map(e -> "?")
 				.reduce((a, b) -> a.concat(",").concat(b)).get();
 	}
 
