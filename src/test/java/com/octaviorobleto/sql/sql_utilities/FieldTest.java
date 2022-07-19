@@ -29,7 +29,7 @@ public class FieldTest {
 	@Test
 	public void getTableName() {
 		String actual = FieldUtils.getTableName(User.class);
-		String expected = "usuarios";
+		String expected = "users";
 		assertEquals(expected, actual);
 	}
 
@@ -46,7 +46,7 @@ public class FieldTest {
 
 		email_user.setClazz(String.class);
 		email_user.setSourceName("email_user");
-		email_user.setDestinationName("email");
+		email_user.setDestinationName("email_user");
 		email_user.setKey(false);
 		email_user.setOwnObject(false);
 		email_user.setParentField(null);
@@ -54,7 +54,7 @@ public class FieldTest {
 
 		key.setClazz(Integer.class);
 		key.setSourceName("key");
-		key.setDestinationName("key");
+		key.setDestinationName("key_user");
 		key.setKey(false);
 		key.setOwnObject(false);
 		key.setParentField(null);

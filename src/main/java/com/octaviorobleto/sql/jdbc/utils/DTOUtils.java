@@ -94,6 +94,7 @@ public class DTOUtils {
 	}
 
 	public static <E> List<E> getElements(ResultSet resultSet, List<FieldWrapper> fieldsWrapper, Class<E> clazzE) {
+
 		if (resultSet == null) {
 			return null;
 		}
@@ -140,12 +141,13 @@ public class DTOUtils {
 						fieldWrapper.setValue((String) resultSet.getString(fieldWrapper.getDestinationName()));
 						break;
 					}
+					
 				}
 
 				listElements.add(FieldUtils.setValuesField(clazzE, fieldsWrapper));
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		} catch (SQLException error) {
+			logger.error(error);
 		}
 		return listElements;
 	}

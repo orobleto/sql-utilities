@@ -1,16 +1,8 @@
 package com.octaviorobleto.sql.jdbc.entities;
 
-import static com.octaviorobleto.sql.jdbc.utils.DTOUtils.setParametersPreparedStatement;
-import static com.octaviorobleto.sql.jdbc.utils.DTOUtils.setValueParameter;
-import static com.octaviorobleto.sql.jdbc.utils.DTOUtils.getElements;
-import static com.octaviorobleto.sql.jdbc.utils.DTOUtils.CRUD;
-import static com.octaviorobleto.sql.jdbc.utils.FieldUtils.getFieldsWrapper;
-import static com.octaviorobleto.sql.jdbc.utils.FieldUtils.getTableName;
-import static com.octaviorobleto.sql.jdbc.utils.QueryUtils.getQueryDelete;
-import static com.octaviorobleto.sql.jdbc.utils.QueryUtils.getQueryFindAll;
-import static com.octaviorobleto.sql.jdbc.utils.QueryUtils.getQueryFindById;
-import static com.octaviorobleto.sql.jdbc.utils.QueryUtils.getQueryInsert;
-import static com.octaviorobleto.sql.jdbc.utils.QueryUtils.getQueryUpdate;
+import static com.octaviorobleto.sql.jdbc.utils.DTOUtils.*;
+import static com.octaviorobleto.sql.jdbc.utils.FieldUtils.*;
+import static com.octaviorobleto.sql.jdbc.utils.QueryUtils.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,7 +12,9 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.octaviorobleto.commons.utilities.text.StringUtils;
 import com.octaviorobleto.sql.jdbc.interfaces.DAO;
+import com.octaviorobleto.sql.jdbc.utils.DTOUtils.CRUD;
 import com.octaviorobleto.sql.jdbc.utils.FieldUtils;
 
 /**
@@ -40,7 +34,7 @@ import com.octaviorobleto.sql.jdbc.utils.FieldUtils;
  */
 public abstract class GenericImplementation<E, K> implements DAO<E, K> {
 	private static Logger logger = LogManager.getLogger();
-	private Class<E> clazz;
+	private final Class<E> clazz;
 	private final String table;
 	private List<FieldWrapper> fieldsWrapper;
 	private Connection connection;
@@ -75,14 +69,14 @@ public abstract class GenericImplementation<E, K> implements DAO<E, K> {
 				setValueParameter(preparedStatementFindByID, fieldWrapper, 1);
 			} else {
 				List<FieldWrapper> fieldsWrapper = FieldUtils.getFieldsWrapper(k.getClass());
+				fieldsWrapper.forEach(fieldWrapper -> fieldWrapper.setKey(true));
+				getValuesField(k, fieldsWrapper);
 				setParametersPreparedStatement(preparedStatementFindByID, fieldsWrapper, CRUD.FIND);
 			}
-
 			logger.debug(preparedStatementFindByID);
 
-			List<E> elements = getElements(preparedStatementFindByID.executeQuery(), fieldsWrapper, clazz);
-
-			return elements != null || elements.size() > 0 ? elements.get(0) : null;
+			List<E> elements = getElements(preparedStatementFindByID.executeQuery(), this.fieldsWrapper, clazz);
+			return elements != null && elements.size() > 0 ? elements.get(0) : null;
 		} catch (SQLException error) {
 			logger.error(error);
 		}
@@ -91,7 +85,20 @@ public abstract class GenericImplementation<E, K> implements DAO<E, K> {
 
 	public boolean save(E e) {
 
-		return false;
+		FieldUtils.getValuesField(e, fieldsWrapper);
+		@SuppressWarnings("unchecked")
+		K k = (K) fieldsWrapper.stream()
+				.filter(fieldWrapper -> fieldWrapper.isKey() && StringUtils.isEmpty(fieldWrapper.getParentField()))
+				.map(c -> c.getValue()).reduce((a, b) -> a).get();
+
+		E element = findById(k);
+		logger.debug(k);
+		logger.debug(element);
+		
+		if (element == null) {
+			return insert(e);
+		}
+		return update(e);
 	}
 
 	private boolean insert(E e) {
@@ -100,7 +107,12 @@ public abstract class GenericImplementation<E, K> implements DAO<E, K> {
 				String queryInsert = getQueryInsert(fieldsWrapper, table);
 				preparedStatementInsert = connection.prepareStatement(queryInsert);
 			}
+			FieldUtils.getValuesField(e, fieldsWrapper);
+			// armamos los parametros del preparedStatement
+			setParametersPreparedStatement(preparedStatementInsert, fieldsWrapper, CRUD.INSERT);
+			logger.debug(preparedStatementInsert);
 
+			return preparedStatementInsert.executeUpdate() == 1;
 		} catch (SQLException error) {
 			logger.error(error);
 		}
@@ -113,6 +125,13 @@ public abstract class GenericImplementation<E, K> implements DAO<E, K> {
 				String queryUpdate = getQueryUpdate(fieldsWrapper, table);
 				preparedStatementUpdate = connection.prepareStatement(queryUpdate);
 			}
+
+			getValuesField(e, fieldsWrapper);
+			// armamos los parametros del preparedStatement
+			setParametersPreparedStatement(preparedStatementUpdate, fieldsWrapper, CRUD.UPDATE);
+			logger.debug(preparedStatementUpdate);
+
+			return preparedStatementUpdate.executeUpdate() == 1;
 		} catch (SQLException error) {
 			logger.error(error);
 		}
@@ -125,6 +144,13 @@ public abstract class GenericImplementation<E, K> implements DAO<E, K> {
 				String queryDelete = getQueryDelete(fieldsWrapper, table);
 				preparedStatementDelete = connection.prepareStatement(queryDelete);
 			}
+			// obtenemos los valores del objeto
+			getValuesField(e, fieldsWrapper);
+			// armamos los parametros del preparedStatement
+			setParametersPreparedStatement(preparedStatementDelete, fieldsWrapper, CRUD.DELETE);
+			logger.debug(preparedStatementDelete);
+
+			return preparedStatementDelete.executeUpdate() == 1;
 
 		} catch (SQLException error) {
 			logger.error(error);
@@ -138,7 +164,8 @@ public abstract class GenericImplementation<E, K> implements DAO<E, K> {
 				String queryFindall = getQueryFindAll(fieldsWrapper, table);
 				preparedStatementFindAll = connection.prepareStatement(queryFindall);
 			}
-
+			logger.debug(preparedStatementFindAll);
+			return getElements(preparedStatementFindAll.executeQuery(), fieldsWrapper, clazz);
 		} catch (SQLException error) {
 			logger.error(error);
 		}

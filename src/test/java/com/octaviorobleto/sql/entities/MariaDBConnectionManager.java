@@ -9,7 +9,7 @@ public final class MariaDBConnectionManager {
 
 	public Connection getConnection() {
 		try {
-			String URL = "jdbc:mariadb://localhost:3306/Reflexion";
+			String URL = "jdbc:mariadb://localhost:3306/sql_utilities";
 			String USER = "root";
 			String KEY = "";
 

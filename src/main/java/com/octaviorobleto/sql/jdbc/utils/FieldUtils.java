@@ -186,7 +186,7 @@ public final class FieldUtils {
 		try {
 			e = clazz.getDeclaredConstructor().newInstance();
 
-			// System.out.println(e);
+			logger.error(e);
 			fieldsWrapper.forEach(parentField -> {
 				try {
 					Field field;
@@ -224,6 +224,12 @@ public final class FieldUtils {
 		return null;
 	}
 
+	/**
+	 * Retorna una clase Envoltorio si el atributo evaluado es un primitivo
+	 * 
+	 * @param clazz
+	 * @return {@link String} clase a instanciar
+	 */
 	private static String getPrimitiveClass(String clazz) {
 		// evaluo al principio si es una clase o un primitivo, al ser una clase returno
 		// el String
@@ -252,6 +258,13 @@ public final class FieldUtils {
 			return clazz;
 		}
 	}
+
+	/**
+	 * Evalua si la entidad posee mas de una clave primaria Si la clave primaria es
+	 * compuesta por 2 o mas elementos debe crear un objeto propio
+	 * 
+	 * @param fieldsWrapper lista de {@link FieldWrapper}
+	 */
 
 	private static void verifyId(List<FieldWrapper> fieldsWrapper) {
 

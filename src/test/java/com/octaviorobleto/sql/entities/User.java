@@ -2,15 +2,17 @@ package com.octaviorobleto.sql.entities;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import com.octaviorobleto.sql.annotations.Column;
 import com.octaviorobleto.sql.annotations.Id;
 import com.octaviorobleto.sql.annotations.Table;
 
-@Table(name = "usuarios")
+@Table(name = "users")
 public class User {
-	@Column(name = "email")
+
 	private String email_user;
+	@Column(name = "key_user")
 	private Integer key;
 	private LocalDate creationDate;
 	private LocalDateTime lastAccessDate;
@@ -37,6 +39,27 @@ public class User {
 	public String toString() {
 		return "User [email_user=" + email_user + ", key=" + key + ", CreationDate=" + creationDate
 				+ ", lastAccessDate=" + lastAccessDate + ", active=" + active + ", document=" + document + "]";
+	}
+	
+	
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(active, creationDate, document, email_user, key, lastAccessDate);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		return active == other.active && Objects.equals(creationDate, other.creationDate)
+				&& Objects.equals(document, other.document) && Objects.equals(email_user, other.email_user)
+				&& Objects.equals(key, other.key) && Objects.equals(lastAccessDate, other.lastAccessDate);
 	}
 
 	public String getEmail_user() {

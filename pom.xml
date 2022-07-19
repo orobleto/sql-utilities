@@ -33,6 +33,16 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client -->
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+			<version>3.0.5</version>
+			<scope>test</scope>
+		</dependency>
+
+
 		<!-- https://github.com/orobleto/commons-utilities-->
 		<dependency>
 			<groupId>com.octaviorobleto.commons</groupId>
