@@ -14,6 +14,7 @@ import com.octaviorobleto.sql.annotations.Column;
 import com.octaviorobleto.sql.annotations.Id;
 import com.octaviorobleto.sql.annotations.Table;
 import com.octaviorobleto.sql.jdbc.entities.FieldWrapper;
+import com.octaviorobleto.sql.jdbc.exceptions.ExceptionField;
 
 /**
  * 
@@ -99,6 +100,8 @@ public final class FieldUtils {
 			}
 
 		}
+		verifyId(fieldsWrapper);
+
 		return fieldsWrapper;
 	}
 
@@ -247,6 +250,30 @@ public final class FieldUtils {
 			return "java.lang.Character";
 		default:
 			return clazz;
+		}
+	}
+
+	private static void verifyId(List<FieldWrapper> fieldsWrapper) {
+
+		int ownObjectKeys = 0;
+		int javaObjectKeys = 0;
+		List<String> keys = new ArrayList<>();
+
+		// solo recorro las claves
+		for (FieldWrapper fieldWrapper : fieldsWrapper.stream().filter(fieldWrapper -> fieldWrapper.isKey())
+				.collect(Collectors.toList())) {
+			keys.add(fieldWrapper.getSourceName());
+			if (fieldWrapper.isOwnObject()) {
+				ownObjectKeys++;
+			} else if (!fieldWrapper.isOwnObject() && (StringUtils.isEmpty(fieldWrapper.getParentField()))) {
+				javaObjectKeys++;
+			}
+
+			if ((ownObjectKeys > 0 && javaObjectKeys > 0) || ownObjectKeys > 1 || javaObjectKeys > 1) {
+				throw new ExceptionField(
+						"Solo esta permitido un Objeto Propio o Primitivo como clave en la entidad.\nClaves Primarias Actuales: "
+								+ keys);
+			}
 		}
 	}
 

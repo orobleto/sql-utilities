@@ -113,7 +113,6 @@ public abstract class GenericImplementation<E, K> implements DAO<E, K> {
 				String queryUpdate = getQueryUpdate(fieldsWrapper, table);
 				preparedStatementUpdate = connection.prepareStatement(queryUpdate);
 			}
-
 		} catch (SQLException error) {
 			logger.error(error);
 		}
