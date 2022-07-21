@@ -15,8 +15,25 @@ import org.apache.logging.log4j.Logger;
 import com.octaviorobleto.commons.utilities.time.DateUtils;
 import com.octaviorobleto.sql.jdbc.entities.FieldWrapper;
 
+/**
+ * 
+ * Clase que provee metodos para instanciar los objetos utilizados en las
+ * implementaciones y los parametros de las consultas preparadas
+ * 
+ * @author <a href="https://octaviorobleto.com" target="_blank">Octavio
+ *         Robleto</a>
+ * @version 1.0
+ * @date 2022-07-19
+ * @class DTOUtils
+ */
 public class DTOUtils {
 	private static Logger logger = LogManager.getLogger();
+
+	/**
+	 * No permitir crear una instancia de {@code DTOUtils}
+	 */
+	private DTOUtils() {
+	}
 
 	public static enum CRUD {
 		FIND, INSERT, DELETE, UPDATE;
@@ -141,7 +158,7 @@ public class DTOUtils {
 						fieldWrapper.setValue((String) resultSet.getString(fieldWrapper.getDestinationName()));
 						break;
 					}
-					
+
 				}
 
 				listElements.add(FieldUtils.setValuesField(clazzE, fieldsWrapper));

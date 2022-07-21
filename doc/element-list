@@ -1,0 +1,5 @@
+com.octaviorobleto.sql.annotations
+com.octaviorobleto.sql.jdbc.entities
+com.octaviorobleto.sql.jdbc.exceptions
+com.octaviorobleto.sql.jdbc.interfaces
+com.octaviorobleto.sql.jdbc.utils

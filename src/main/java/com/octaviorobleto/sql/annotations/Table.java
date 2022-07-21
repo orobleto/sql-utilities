@@ -7,7 +7,9 @@ import java.lang.annotation.Target;
 
 /**
  * 
- * Indica el nombre de la tabla en la entidad utilizada
+ * Indica el nombre de la tabla en la entidad utilizada, puede o no utilizar
+ * esta anotacion , de no poseerla se tomara el nombre de la clase como nombre
+ * de la tabla
  * 
  * @author <a href="https://octaviorobleto.com" target="_blank">Octavio
  *         Robleto</a>

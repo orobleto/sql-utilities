@@ -7,7 +7,8 @@ import java.lang.annotation.Target;
 
 /**
  * 
- * Indica el nombre de la columna y si es primary key en los campos utilizados
+ * Indica el nombre de la columna, puede o no utilizar esta anotacion, de no
+ * poseerla se tomara el nombre del atributo como nombre de campo en la tabla
  * 
  * @author <a href="https://octaviorobleto.com" target="_blank">Octavio
  *         Robleto</a>
