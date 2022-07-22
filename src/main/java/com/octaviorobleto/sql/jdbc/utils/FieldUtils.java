@@ -185,8 +185,6 @@ public final class FieldUtils {
 		E e;
 		try {
 			e = clazz.getDeclaredConstructor().newInstance();
-
-			logger.error(e);
 			fieldsWrapper.forEach(parentField -> {
 				try {
 					Field field;

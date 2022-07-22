@@ -2,6 +2,7 @@ package com.octaviorobleto.sql.jdbc.utils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.octaviorobleto.sql.jdbc.entities.FieldWrapper;
 
@@ -32,7 +33,7 @@ public final class QueryUtils {
 	 */
 
 	public static String getQueryFindById(List<FieldWrapper> fieldsWrapper, String table) {
-		return "select " + getSelect(fieldsWrapper) + " from " + table + " where " + getWhere(fieldsWrapper);
+		return "select " + getSelect(fieldsWrapper) + " from " + table + getWhere(fieldsWrapper);
 	}
 
 	/**
@@ -43,7 +44,7 @@ public final class QueryUtils {
 	 * @return {@link String}
 	 */
 	public static String getQueryDelete(List<FieldWrapper> fieldsWrapper, String table) {
-		return "delete from " + table + " where " + getWhere(fieldsWrapper);
+		return "delete from " + table + getWhere(fieldsWrapper);
 	}
 
 	/**
@@ -67,7 +68,7 @@ public final class QueryUtils {
 	 * @return {@link String}
 	 */
 	public static String getQueryUpdate(List<FieldWrapper> fieldsWrapper, String table) {
-		return "update  " + table + " set " + getSet(fieldsWrapper) + " where " + getWhere(fieldsWrapper);
+		return "update  " + table + " set " + getSet(fieldsWrapper) + getWhere(fieldsWrapper);
 	}
 
 	/**
@@ -123,9 +124,16 @@ public final class QueryUtils {
 	 * @return {@link String}
 	 */
 	private static String getWhere(List<FieldWrapper> fieldsWrapper) {
+		// obtengo las claves
+		List<FieldWrapper> fieldsWrapperKeys = fieldsWrapper.stream().filter(e -> (e.isKey() && !e.isOwnObject()))
+				.collect(Collectors.toList());
+		if (fieldsWrapperKeys.size() == 0) {
+			return "";
+		}
+
 		String and = " = ? and ";
-		String where = fieldsWrapper.stream().filter(e -> (e.isKey() && !e.isOwnObject()))
-				.map(e -> e.getDestinationName()).reduce((a, b) -> a.concat(and).concat(b)).get().concat(" = ?");
-		return where;
+		String where = fieldsWrapperKeys.stream().map(e -> e.getDestinationName())
+				.reduce((a, b) -> a.concat(and).concat(b)).get().concat(" = ?");
+		return " where " + where;
 	}
 }
