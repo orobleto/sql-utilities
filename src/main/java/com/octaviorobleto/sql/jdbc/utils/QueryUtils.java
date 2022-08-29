@@ -17,6 +17,7 @@ import com.octaviorobleto.sql.jdbc.entities.FieldWrapper;
  * @class QueryUtils
  */
 public final class QueryUtils {
+
 	/**
 	 * No permitir crear una instancia de {@code QueryUtils}
 	 */
@@ -56,8 +57,8 @@ public final class QueryUtils {
 	 * @return {@link String}
 	 */
 	public static String getQueryInsert(List<FieldWrapper> fieldsWrapper, String table) {
-		return "insert into  " + table + " (" + getSelect(fieldsWrapper) + ") values (" + getValues(fieldsWrapper)
-				+ ")";
+		return "insert into  " + table + " (" + getFieldInsert(fieldsWrapper) + ") values ("
+				+ getValuesInsert(fieldsWrapper) + ")";
 	}
 
 	/**
@@ -101,20 +102,9 @@ public final class QueryUtils {
 	 */
 	private static String getSet(List<FieldWrapper> fieldsWrapper) {
 		String and = " = ?, ";
-		String set = fieldsWrapper.stream().filter(e -> (!e.isKey() && !e.isOwnObject()))
+		String set = fieldsWrapper.stream().filter(e -> (!e.isKey() && !e.isOwnObject() && !e.isIdentity()))
 				.map(e -> e.getDestinationName()).reduce((a, b) -> a.concat(and).concat(b)).get().concat(" = ?");
 		return set;
-	}
-
-	/**
-	 * Retorna un String con los parametros a reemplazar en el PreparedStatement
-	 * 
-	 * @param fieldsWrapper lista de {@link FieldWrapper}
-	 * @return {@link String}
-	 */
-	private static String getValues(List<FieldWrapper> fieldsWrapper) {
-		return Arrays.asList(getSelect(fieldsWrapper).split(",")).stream().map(e -> "?")
-				.reduce((a, b) -> a.concat(",").concat(b)).get();
 	}
 
 	/**
@@ -135,5 +125,27 @@ public final class QueryUtils {
 		String where = fieldsWrapperKeys.stream().map(e -> e.getDestinationName())
 				.reduce((a, b) -> a.concat(and).concat(b)).get().concat(" = ?");
 		return " where " + where;
+	}
+
+	/**
+	 * Retorna un String con los campos del insert
+	 * 
+	 * @param fieldsWrapper lista de {@link FieldWrapper}
+	 * @return {@link String}
+	 */
+	private static String getFieldInsert(List<FieldWrapper> fieldsWrapper) {
+		return fieldsWrapper.stream().filter(e -> !e.isOwnObject() && !e.isIdentity()).map(e -> e.getDestinationName())
+				.reduce((a, b) -> a.concat(",").concat(b)).get();
+	}
+
+	/**
+	 * Retorna un String con los parametros a reemplazar en el Insert
+	 * 
+	 * @param fieldsWrapper lista de {@link FieldWrapper}
+	 * @return {@link String}
+	 */
+	private static String getValuesInsert(List<FieldWrapper> fieldsWrapper) {
+		return Arrays.asList(getFieldInsert(fieldsWrapper).split(",")).stream().map(e -> "?")
+				.reduce((a, b) -> a.concat(",").concat(b)).get();
 	}
 }

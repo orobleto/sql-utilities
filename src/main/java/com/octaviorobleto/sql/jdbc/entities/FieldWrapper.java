@@ -21,13 +21,14 @@ public final class FieldWrapper {
 	private String parentField;
 	private boolean ownObject;
 	private Object value;
+	private boolean identity;
 
 	public FieldWrapper() {
 		super();
 	}
 
 	public FieldWrapper(Class<?> clazz, String sourceName, String destinationName, boolean key, String parentField,
-			boolean ownObject, Object value) {
+			boolean ownObject, Object value, boolean identity) {
 		super();
 		this.clazz = clazz;
 		this.sourceName = sourceName;
@@ -36,16 +37,17 @@ public final class FieldWrapper {
 		this.parentField = parentField;
 		this.ownObject = ownObject;
 		this.value = value;
+		this.identity = identity;
 	}
 
 	public String toString() {
 		return "FieldWrapper [clazz=" + clazz + ", sourceName=" + sourceName + ", destinationName=" + destinationName
 				+ ", key=" + key + ", parentField=" + parentField + ", ownObject=" + ownObject + ", value=" + value
-				+ "]";
+				+ ", identity=" + identity + "]";
 	}
 
 	public int hashCode() {
-		return Objects.hash(clazz, destinationName, key, ownObject, parentField, sourceName, value);
+		return Objects.hash(clazz, destinationName, identity, key, ownObject, parentField, sourceName, value);
 	}
 
 	public boolean equals(Object obj) {
@@ -57,8 +59,9 @@ public final class FieldWrapper {
 			return false;
 		FieldWrapper other = (FieldWrapper) obj;
 		return Objects.equals(clazz, other.clazz) && Objects.equals(destinationName, other.destinationName)
-				&& key == other.key && ownObject == other.ownObject && Objects.equals(parentField, other.parentField)
-				&& Objects.equals(sourceName, other.sourceName) && Objects.equals(value, other.value);
+				&& identity == other.identity && key == other.key && ownObject == other.ownObject
+				&& Objects.equals(parentField, other.parentField) && Objects.equals(sourceName, other.sourceName)
+				&& Objects.equals(value, other.value);
 	}
 
 	public Class<?> getClazz() {
@@ -115,6 +118,14 @@ public final class FieldWrapper {
 
 	public void setValue(Object value) {
 		this.value = value;
+	}
+
+	public boolean isIdentity() {
+		return identity;
+	}
+
+	public void setIdentity(boolean identity) {
+		this.identity = identity;
 	}
 
 }

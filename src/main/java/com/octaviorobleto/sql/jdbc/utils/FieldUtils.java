@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.octaviorobleto.commons.utilities.text.StringUtils;
+import com.octaviorobleto.sql.annotations.AutomaticNumberGeneration;
 import com.octaviorobleto.sql.annotations.Column;
 import com.octaviorobleto.sql.annotations.Id;
 import com.octaviorobleto.sql.annotations.Table;
@@ -84,23 +85,31 @@ public final class FieldUtils {
 				fieldWrapper.setKey(true);
 			}
 
+			// verificamos si el objeto es un identity
+			if (field.isAnnotationPresent(AutomaticNumberGeneration.class)) {
+				fieldWrapper.setIdentity(true);
+			}
+
 			fieldWrapper.setDestinationName(destinationName);
 
 			// agregamos el objeto a la lista
 			fieldsWrapper.add(fieldWrapper);
 
-			// agregamos todos los campos del objeto propio y setemoa nombre padre y si es
-			// clave
+			// agregamos todos los campos del objeto propio y seteamos nombre padre y si es
+			// clave e identity
 			if (ownFieldsWrapper.size() > 0) {
 				fieldsWrapper.addAll(ownFieldsWrapper.stream().map(e -> {
 					e.setParentField(fieldWrapper.getSourceName());
 					e.setKey(fieldWrapper.isKey());
+					e.setIdentity(fieldWrapper.isIdentity());
 					return e;
 				}).collect(Collectors.toList()));
 			}
 
 		}
+
 		verifyId(fieldsWrapper);
+		verifyIdentity(fieldsWrapper);
 
 		return fieldsWrapper;
 	}
@@ -229,31 +238,31 @@ public final class FieldUtils {
 	 * @return {@link String} clase a instanciar
 	 */
 	private static String getPrimitiveClass(String clazz) {
-		// evaluo al principio si es una clase o un primitivo, al ser una clase returno
+		// evaluo al principio si es una clase o un primitivo, al ser una clase retorno
 		// el String
 		if (!StringUtils.isEmpty(clazz) && !(clazz.indexOf(".") == -1)) {
 			return clazz;
 		}
 
 		switch (clazz) {
-		case "byte":
-			return "java.lang.Byte";
-		case "short":
-			return "java.lang.Short";
-		case "int":
-			return "java.lang.Integer";
-		case "long":
-			return "java.lang.Long";
-		case "float":
-			return "java.lang.Float";
-		case "double":
-			return "java.lang.Double";
-		case "boolean":
-			return "java.lang.Boolean";
-		case "char":
-			return "java.lang.Character";
-		default:
-			return clazz;
+			case "byte":
+				return "java.lang.Byte";
+			case "short":
+				return "java.lang.Short";
+			case "int":
+				return "java.lang.Integer";
+			case "long":
+				return "java.lang.Long";
+			case "float":
+				return "java.lang.Float";
+			case "double":
+				return "java.lang.Double";
+			case "boolean":
+				return "java.lang.Boolean";
+			case "char":
+				return "java.lang.Character";
+			default:
+				return clazz;
 		}
 	}
 
@@ -282,10 +291,37 @@ public final class FieldUtils {
 
 			if ((ownObjectKeys > 0 && javaObjectKeys > 0) || ownObjectKeys > 1 || javaObjectKeys > 1) {
 				throw new ExceptionField(
-						"Solo esta permitido un Objeto Propio o Primitivo como clave en la entidad.\nClaves Primarias Actuales: "
+						"Solo esta permitido un Objeto Propio, Primitivo o envoltorio como clave en la entidad.\nClaves Primarias Actuales: "
 								+ keys);
 			}
 		}
+	}
+
+	/**
+	 * Evalua si la entidad posee mas de una clave primaria Si la clave primaria es
+	 * compuesta por 2 o mas elementos debe crear un objeto propio
+	 * 
+	 * @param fieldsWrapper lista de {@link FieldWrapper}
+	 */
+
+	private static void verifyIdentity(List<FieldWrapper> fieldsWrapper) {
+
+		List<FieldWrapper> fieldsWrapperIdentity = fieldsWrapper.stream()
+				.filter(fieldWrapper -> fieldWrapper.isIdentity()).collect(Collectors.toList());
+		int count = fieldsWrapperIdentity.size();
+
+		if (count > 1) {
+			throw new ExceptionField(
+					"Solo esta permitido un Primitivo o envoltorio como campo de incremento automatico.\nClaves Primarias Actuales: "
+							+ fieldsWrapperIdentity);
+		} else if (count == 1) {
+			if (!fieldsWrapperIdentity.get(0).getClazz().getName().equalsIgnoreCase("java.lang.Integer")
+					&& !fieldsWrapperIdentity.get(0).getClazz().getName().equalsIgnoreCase("java.lang.Long")) {
+				throw new ExceptionField(
+						"Solo esta permitido en el campo de incremento automatico un Primitivo o envoltorio (Integer o Long)");
+			}
+		}
+
 	}
 
 }

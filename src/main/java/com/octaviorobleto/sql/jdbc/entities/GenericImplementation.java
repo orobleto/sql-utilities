@@ -48,6 +48,7 @@ public abstract class GenericImplementation<E, K> implements DAO<E, K> {
 	private final String table;
 	private List<FieldWrapper> fieldsWrapper;
 	private boolean keyExists;
+	private boolean identityExists;
 	private Connection connection;
 	private PreparedStatement preparedStatementFindByID;
 	private PreparedStatement preparedStatementInsert;
@@ -67,6 +68,7 @@ public abstract class GenericImplementation<E, K> implements DAO<E, K> {
 		table = getTableName(clazz);
 		fieldsWrapper = getFieldsWrapper(clazz);
 		keyExists = fieldsWrapper.stream().filter(e -> e.isKey()).count() != 0;
+		identityExists = fieldsWrapper.stream().filter(e -> e.isIdentity()).count() != 0;
 	}
 
 	public E findById(K k) {
@@ -104,21 +106,32 @@ public abstract class GenericImplementation<E, K> implements DAO<E, K> {
 
 	public boolean save(E e) {
 		validateNull(e);
+		boolean save = false;
+		boolean update = false;
 		FieldUtils.getValuesField(e, fieldsWrapper);
-		logger.debug(keyExists);
-		if (keyExists) {
-			@SuppressWarnings("unchecked")
-			K k = (K) fieldsWrapper.stream()
-					.filter(fieldWrapper -> fieldWrapper.isKey() && StringUtils.isEmpty(fieldWrapper.getParentField()))
-					.map(c -> c.getValue()).reduce((a, b) -> a).get();
-			E element = findById(k);
 
-			if (element == null) {
-				return insert(e);
+		@SuppressWarnings("unchecked")
+		K k = (K) fieldsWrapper.stream()
+				.filter(fieldWrapper -> fieldWrapper.isKey() && StringUtils.isEmpty(fieldWrapper.getParentField()))
+				.map(c -> c.getValue()).reduce((a, b) -> a).get();
+
+		if (keyExists) {
+			E element = findById(k);
+			if (element != null) {
+				update = true;
+				save = update(e);
 			}
-			return update(e);
 		}
-		return insert(e);
+
+		if (!update) {
+			save = insert(e);
+		}
+
+		if (identityExists) {
+			e = findById(k);
+		}
+		logger.debug(e.hashCode());
+		return save;
 	}
 
 	private boolean insert(E e) {

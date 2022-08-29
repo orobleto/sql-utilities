@@ -4,12 +4,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import com.octaviorobleto.sql.annotations.AutomaticNumberGeneration;
 import com.octaviorobleto.sql.annotations.Column;
 import com.octaviorobleto.sql.annotations.Id;
 import com.octaviorobleto.sql.annotations.Table;
 
 @Table(name = "users")
 public class User {
+
+	@AutomaticNumberGeneration
+	private Integer id;
 
 	private String email_user;
 	@Column(name = "key_user")
@@ -35,14 +39,20 @@ public class User {
 		this.document = document;
 	}
 
-	@Override
-	public String toString() {
-		return "User [email_user=" + email_user + ", key=" + key + ", CreationDate=" + creationDate
-				+ ", lastAccessDate=" + lastAccessDate + ", active=" + active + ", document=" + document + "]";
+	public User(Integer id, String email_user, Integer key, LocalDate creationDate, LocalDateTime lastAccessDate,
+			boolean active, Document document) {
+		super();
+		this.id = id;
+		this.email_user = email_user;
+		this.key = key;
+		this.creationDate = creationDate;
+		this.lastAccessDate = lastAccessDate;
+		this.active = active;
+		this.document = document;
 	}
-	
-	
 
+	
+	
 	@Override
 	public int hashCode() {
 		return Objects.hash(active, creationDate, document, email_user, key, lastAccessDate);
@@ -60,6 +70,20 @@ public class User {
 		return active == other.active && Objects.equals(creationDate, other.creationDate)
 				&& Objects.equals(document, other.document) && Objects.equals(email_user, other.email_user)
 				&& Objects.equals(key, other.key) && Objects.equals(lastAccessDate, other.lastAccessDate);
+	}
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", email_user=" + email_user + ", key=" + key + ", creationDate=" + creationDate
+				+ ", lastAccessDate=" + lastAccessDate + ", active=" + active + ", document=" + document + "]";
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public String getEmail_user() {
