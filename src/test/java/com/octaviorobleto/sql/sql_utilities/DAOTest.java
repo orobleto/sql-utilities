@@ -17,21 +17,23 @@ public class DAOTest {
 
 	@Test
 	public void save() {
-		User user = new User("user62@gmail.com", 1234, DateUtils.getLocalDate("1983-03-16", DateUtils.FORMAT_YYYY_MM_DD),
+		User user = new User("user62@gmail.com", 1234,
+				DateUtils.getLocalDate("1983-03-16", DateUtils.FORMAT_YYYY_MM_DD),
 				DateUtils.getLocalDateTime("2022-03-05 18:36:36", DateUtils.FORMAT_YYYY_MM_DD_HH_MM_SS_24H), true,
-				new Document("DNI", 14));
-		boolean actual = false;
+				new Document("DNI", 16));
+		User actual = null;
 		try {
 			actual = userImplementation.save(user);
-			logger.info(user.hashCode());
-			logger.info(user);
-			user = userImplementation.findById(new Document("DNI", 10));
-			logger.info(user);
+
 		} catch (Exception e) {
 			logger.error(e);
 		}
 
-		boolean expected = true;
+		User expected = new User(10, "user62@gmail.com", 1234,
+				DateUtils.getLocalDate("1983-03-16", DateUtils.FORMAT_YYYY_MM_DD),
+				DateUtils.getLocalDateTime("2022-03-05 18:36:36", DateUtils.FORMAT_YYYY_MM_DD_HH_MM_SS_24H), true,
+				new Document("DNI", 16));
+		;
 		assertEquals(expected, actual);
 	}
 	/*

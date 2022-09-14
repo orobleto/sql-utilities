@@ -51,11 +51,9 @@ public class User {
 		this.document = document;
 	}
 
-	
-	
 	@Override
 	public int hashCode() {
-		return Objects.hash(active, creationDate, document, email_user, key, lastAccessDate);
+		return Objects.hash(active, creationDate, document, email_user, id, key, lastAccessDate);
 	}
 
 	@Override
@@ -69,7 +67,8 @@ public class User {
 		User other = (User) obj;
 		return active == other.active && Objects.equals(creationDate, other.creationDate)
 				&& Objects.equals(document, other.document) && Objects.equals(email_user, other.email_user)
-				&& Objects.equals(key, other.key) && Objects.equals(lastAccessDate, other.lastAccessDate);
+				&& Objects.equals(id, other.id) && Objects.equals(key, other.key)
+				&& Objects.equals(lastAccessDate, other.lastAccessDate);
 	}
 
 	@Override

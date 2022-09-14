@@ -104,7 +104,7 @@ public abstract class GenericImplementation<E, K> implements DAO<E, K> {
 		return null;
 	}
 
-	public boolean save(E e) {
+	public E save(E e) {
 		validateNull(e);
 		boolean save = false;
 		boolean update = false;
@@ -118,20 +118,17 @@ public abstract class GenericImplementation<E, K> implements DAO<E, K> {
 		if (keyExists) {
 			E element = findById(k);
 			if (element != null) {
-				update = true;
-				save = update(e);
+				update(e);
+				return findById(k);
 			}
 		}
 
-		if (!update) {
-			save = insert(e);
-		}
+		insert(e);
 
-		if (identityExists) {
-			e = findById(k);
+		if (keyExists) {
+			return findById(k);
 		}
-		logger.debug(e.hashCode());
-		return save;
+		return e;
 	}
 
 	private boolean insert(E e) {

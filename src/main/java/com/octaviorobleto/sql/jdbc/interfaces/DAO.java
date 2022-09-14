@@ -20,7 +20,7 @@ import java.util.List;
 public interface DAO<E, K> {
 	E findById(K k);
 
-	boolean save(E e);
+	E save(E e);
 
 	boolean delete(E e);
 
