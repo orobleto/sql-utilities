@@ -5,7 +5,7 @@
 
 	<groupId>com.octaviorobleto.sql</groupId>
 	<artifactId>sql-utilities</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>1.0.1</version>
 
 	<name>sql-utilities</name>
 	<!-- FIXME change it to the project's website -->
